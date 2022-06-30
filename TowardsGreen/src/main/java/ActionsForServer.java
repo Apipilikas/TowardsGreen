@@ -42,7 +42,7 @@ public class ActionsForServer extends Thread {
 				
 				// GETMOREPOSTS: Get more posts
 				if (request.getRequestType().equals("GETMOREPOSTS")) {
-					ArrayList<String> posts = postDao.getFirstN(2, Integer.parseInt(request.getContent()));
+					ArrayList<String> posts = postDao.getFirstN(3, Integer.parseInt(request.getContent()));
 					String post = gson.toJson(posts);
 					objectOS.writeObject(post);
 					objectOS.flush();
