@@ -1,4 +1,4 @@
-# towards-green
+# TowardsGreen
 Evangelos Pipilikas
 
 ## Clarifications
