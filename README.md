@@ -4,6 +4,10 @@ Evangelos Pipilikas
 ## Clarifications
 This first Version (Version 1) of this project has been implemented by me, John Mavridis and Antonis Christoulakis. After that, all the upcoming versions have been released by me.
 
+## Content
+1. TowardsGreen folder: server side (the main server which should be running for the whole duration)
+2. ΤοwardsGreenApp folder: client side (the mobile app)
+
 ## Main reason of this project
 This project has been implemented for the course Application Development of Computer Systems at AUEB for the year 2021-2022. We were asked to foster a pioneering idea for an upcoming app. In a world that constanly changes and demands people's attention more than ever before, there is nothing else but environment that could draw our interest.
 
@@ -39,5 +43,11 @@ An example is always the best way to understand something. So, let's say that we
 ## Further implementation
 After the release of Version 1 (which is the one that has been submitted for the purpose of the course), several bugs have been found. Other than that, code needs simplification to obtain code maintainability and some GUI needs change in terms of color and organization.
 
+## How to run the project?
+* To run the server, ideal environment is Eclipse. Open the TowardsGreen project there (located in the folder with the same name) by doing `Import Gradle Project`. In order to successfully connect to MongoDB, it needs a modification to its environment variables. The main one we want to run is in the `Server.java` file. Instead of pressing Run, press `Run Configurations`. Make sure that in the left column Server in the Java Application is selected and go to the Arguments page. Then, add to the VM arguments the command `-Djdk.tls.client.protocols=TLSv1.2`. by doing the latter we ensure that the connection with the MongoDB is not blocked.
+* To run the client, open the TowardsGreenApp project in Android Studio by doing Import Project.
+~~~
+Last but not least, make sure that server is able to connect properly with the MongoDB and every time you run the client side, server is up!
+~~~
 
 © 2022 Towards Green.  All rights reserved
