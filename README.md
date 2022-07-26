@@ -44,8 +44,8 @@ An example is always the best way to understand something. So, let's say that we
 After the release of Version 1 (which is the one that has been submitted for the purpose of the course), several bugs have been found. Other than that, code needs simplification to obtain code maintainability and some GUI needs change in terms of color and organization.
 
 ## How to run the project?
-* To run the server, ideal environment is Eclipse. Open the TowardsGreen project there (located in the folder with the same name) by doing `Import Gradle Project`. In order to successfully connect to MongoDB, it needs a modification to its environment variables. The main one we want to run is in the `Server.java` file. Instead of pressing Run, press `Run Configurations`. Make sure that in the left column Server in the Java Application is selected and go to the Arguments page. Then, add to the VM arguments the command `-Djdk.tls.client.protocols=TLSv1.2`. by doing the latter we ensure that the connection with the MongoDB is not blocked.
-* To run the client, open the TowardsGreenApp project in Android Studio by doing Import Project.
+* To run the **server**, ideal environment is Eclipse. Open the TowardsGreen project there (located in the folder with the same name) by doing `Import Gradle Project`. In order to successfully connect to MongoDB, it needs a modification to its environment variables. The main one we want to run is in the `Server.java` file. Instead of pressing Run, press `Run Configurations`. Make sure that in the left column Server in the Java Application is selected and go to the Arguments page. Then, add to the VM arguments the command `-Djdk.tls.client.protocols=TLSv1.2`. by doing the latter we ensure that the connection with the MongoDB is not blocked.
+* To run the **client**, open the TowardsGreenApp project in Android Studio by doing `Import Project`.
 ~~~
 Last but not least, make sure that server is able to connect properly with the MongoDB and every time you run the client side, server is up!
 ~~~
