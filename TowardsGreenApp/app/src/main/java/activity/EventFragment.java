@@ -33,7 +33,7 @@ import com.aueb.towardsgreen.Connection;
 import com.aueb.towardsgreen.Event;
 import com.aueb.towardsgreen.R;
 import com.aueb.towardsgreen.Request;
-import com.aueb.towardsgreen.domain.Profile;
+import com.aueb.towardsgreen.Profile;
 import com.google.gson.Gson;
 
 import java.util.Map;

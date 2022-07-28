@@ -1,6 +1,5 @@
 package com.aueb.towardsgreen;
 
-import com.aueb.towardsgreen.domain.Profile;
 import com.google.gson.Gson;
 
 import java.io.IOException;

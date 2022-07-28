@@ -11,7 +11,6 @@ import com.aueb.towardsgreen.Event;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -25,7 +24,7 @@ import android.widget.ScrollView;
 
 import com.aueb.towardsgreen.R;
 import com.aueb.towardsgreen.Request;
-import com.aueb.towardsgreen.domain.Profile;
+import com.aueb.towardsgreen.Profile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 

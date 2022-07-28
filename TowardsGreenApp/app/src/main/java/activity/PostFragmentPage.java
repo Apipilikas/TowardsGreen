@@ -22,7 +22,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.aueb.towardsgreen.Connection;
 import com.aueb.towardsgreen.R;
 import com.aueb.towardsgreen.Request;
-import com.aueb.towardsgreen.domain.Post;
+import com.aueb.towardsgreen.Post;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 

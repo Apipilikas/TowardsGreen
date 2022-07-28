@@ -6,30 +6,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.aueb.towardsgreen.Connection;
-import com.aueb.towardsgreen.Event;
 import com.aueb.towardsgreen.R;
 import com.aueb.towardsgreen.UserDao;
-import com.aueb.towardsgreen.domain.Profile;
+import com.aueb.towardsgreen.Profile;
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONException;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {

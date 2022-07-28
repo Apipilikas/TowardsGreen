@@ -30,8 +30,8 @@ import androidx.fragment.app.Fragment;
 import com.aueb.towardsgreen.Connection;
 import com.aueb.towardsgreen.R;
 import com.aueb.towardsgreen.Request;
-import com.aueb.towardsgreen.domain.Post;
-import com.aueb.towardsgreen.domain.Profile;
+import com.aueb.towardsgreen.Post;
+import com.aueb.towardsgreen.Profile;
 import com.google.gson.Gson;
 
 public class PostFragment extends Fragment {
