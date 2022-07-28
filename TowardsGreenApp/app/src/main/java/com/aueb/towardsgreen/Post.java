@@ -1,4 +1,4 @@
-package com.aueb.towardsgreen.domain;
+package com.aueb.towardsgreen;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

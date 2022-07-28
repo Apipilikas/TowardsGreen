@@ -1,4 +1,4 @@
-package com.aueb.towardsgreen.domain;
+package com.aueb.towardsgreen;
 
 import java.io.Serializable;
 import java.util.UUID;

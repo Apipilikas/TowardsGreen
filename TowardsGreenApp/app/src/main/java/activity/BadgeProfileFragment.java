@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.aueb.towardsgreen.R;
-import com.aueb.towardsgreen.domain.Badge;
+import com.aueb.towardsgreen.Badge;
 
 public class BadgeProfileFragment extends Fragment {
     private Badge badge;

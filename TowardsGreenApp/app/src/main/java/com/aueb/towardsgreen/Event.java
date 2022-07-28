@@ -7,12 +7,8 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.aueb.towardsgreen.domain.Badge;
-
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;

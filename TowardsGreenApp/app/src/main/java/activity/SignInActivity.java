@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -14,14 +15,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.aueb.towardsgreen.Connection;
+import com.aueb.towardsgreen.asynctask.ResultAsyncTask;
+import com.aueb.towardsgreen.dialog.MyProgressDialog;
 import com.aueb.towardsgreen.R;
 import com.aueb.towardsgreen.Request;
+import com.aueb.towardsgreen.dialog.ResultAlertDialog;
 import com.aueb.towardsgreen.User;
 import com.aueb.towardsgreen.UserDao;
-import com.aueb.towardsgreen.domain.Profile;
+import com.aueb.towardsgreen.Profile;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -33,6 +36,8 @@ public class SignInActivity extends AppCompatActivity {
     private Button logInBtn;
     private Button createAccountBtn;
     private User rememberedUser;
+    private User logInUser;
+    private final Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +64,11 @@ public class SignInActivity extends AppCompatActivity {
         logInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                User user = new User(email.getText().toString(),
+                logInUser = new User(email.getText().toString(),
                                      password.getText().toString());
 
-                AuthenticationAsyncTask authenticationAsyncTask = new AuthenticationAsyncTask(user);
+                AuthenticationAsyncTask authenticationAsyncTask = new AuthenticationAsyncTask(SignInActivity.this,
+                        gson.toJson(logInUser), "USERCON");
                 authenticationAsyncTask.execute();
             }
         });
@@ -74,54 +80,6 @@ public class SignInActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-
-    private void intentMainActivity() {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    private boolean authenticateUser(User user) {
-        Request request = new Request("USERCON", new Gson().toJson(user));
-        return Connection.getInstance().requestSendData(request);
-    }
-
-    private void showAlertDialog(boolean result) {
-        String successMessage = "Η αυθεντικοποίηση έγινε επιτυχώς.";
-        String failureMessage = "Το email ή ο κωδικός είναι λάθος. Ξαναπροσπαθήστε!";
-
-        AlertDialog alertDialog;
-        AlertDialog.Builder builderDialog = new AlertDialog.Builder(this);
-        View layoutView = null;
-
-        if (result) {
-            layoutView = getLayoutInflater().inflate(R.layout.success_dialog, null);
-            TextView successMsg = layoutView.findViewById(R.id.success_dialog_txt);
-            successMsg.setText(successMessage);
-        }
-        else {
-            layoutView = getLayoutInflater().inflate(R.layout.failure_dialog, null);
-            TextView failureMsg = layoutView.findViewById(R.id.failure_dialog_txt);
-            failureMsg.setText(failureMessage);
-        }
-
-        builderDialog.setView(layoutView);
-
-        alertDialog = builderDialog.create();
-        alertDialog.setCancelable(false);
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.show();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                alertDialog.dismiss();
-                if (result) {
-                    intentMainActivity();
-                }
-            }
-        }, 3000);
     }
 
     private  void showInputAddressDialog() {
@@ -136,7 +94,7 @@ public class SignInActivity extends AppCompatActivity {
 
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
-                        ConnectionAsyncTask connectionAsyncTask = new ConnectionAsyncTask();
+                        ConnectionAsyncTask connectionAsyncTask = new ConnectionAsyncTask(SignInActivity.this);
                         connectionAsyncTask.execute();
                         break;
                 }
@@ -158,63 +116,40 @@ public class SignInActivity extends AppCompatActivity {
                 String address = editText.getText().toString();
                 Connection.getInstance().setAddress(address);
                 alertDialog.dismiss();
-                ConnectionAsyncTask connectionAsyncTask = new ConnectionAsyncTask();
+                ConnectionAsyncTask connectionAsyncTask = new ConnectionAsyncTask(SignInActivity.this);
                 connectionAsyncTask.execute();
             }
         });
     }
 
-    private class ConnectionAsyncTask extends AsyncTask<String, String, Integer> {
+    private class ConnectionAsyncTask extends ResultAsyncTask {
 
-        ProgressDialog pd = new ProgressDialog(SignInActivity.this);
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            pd.setMessage("Παρακαλώ περιμένετε για σύνδεση...");
-            pd.setIndeterminate(false);
-            pd.setCancelable(false);
-            pd.show();
-        }
-
-        @Override
-        protected Integer doInBackground(String... strings) {
-            Connection.getInstance().connect();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Integer i) {
-            if (!rememberedUser.getEmail().equals("null")) {
-                AuthenticationAsyncTask authenticationAsyncTask = new AuthenticationAsyncTask(rememberedUser);
-                authenticationAsyncTask.execute();
-            }
-            pd.hide();
-            pd.dismiss();
-        }
-    }
-
-    private class AuthenticationAsyncTask extends AsyncTask<String, String, Boolean> {
-        private User user;
-
-        public AuthenticationAsyncTask(User user) {
-            this.user = user;
-        }
-
-        ProgressDialog pd = new ProgressDialog(SignInActivity.this);
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            pd.setMessage("Παρακαλώ περιμένετε για αυθεντικοποίηση...");
-            pd.setIndeterminate(false);
-            pd.setCancelable(false);
-            pd.show();
+        public ConnectionAsyncTask(Context context) {
+            super(context, "Παρακαλώ περιμένετε για σύνδεση...");
         }
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            return authenticateUser(user);
+            Connection.getInstance().connect();
+            return super.doInBackground(strings);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean bool) {
+            super.onPostExecute(bool);
+            if (!rememberedUser.getEmail().equals("null")) {
+                AuthenticationAsyncTask authenticationAsyncTask = new AuthenticationAsyncTask(SignInActivity.this,
+                        gson.toJson(rememberedUser), "USERCON");
+                authenticationAsyncTask.execute();
+            }
+        }
+    }
+
+    private class AuthenticationAsyncTask extends ResultAsyncTask {
+
+
+        public AuthenticationAsyncTask(Context context, String json, String requestType) {
+            super(context, "Παρακαλώ περιμένετε για αυθεντικοποίηση...", json, requestType);
         }
 
         @Override
@@ -222,20 +157,35 @@ public class SignInActivity extends AppCompatActivity {
             if (result) {
                 if (rememberMe.isChecked()) {
                     try {
-                        UserDao.getInstance(SignInActivity.this).saveUser(user);
+                        UserDao.getInstance(SignInActivity.this).saveUser(logInUser);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
                 Request request = new Request("GETPR", email.getText().toString());
                 String json = Connection.getInstance().requestGetData(request).get(0);
-                Profile profile = new Gson().fromJson(json, Profile.class);
+                Profile profile = gson.fromJson(json, Profile.class);
 
                 Connection.getInstance().setProfile(profile);
             }
-            pd.hide();
-            pd.dismiss();
-            showAlertDialog(result);
+
+            super.onPostExecute(result);
+
+            String successMessage = "Η αυθεντικοποίηση έγινε επιτυχώς.";
+            String failureMessage = "Το email ή ο κωδικός είναι λάθος. Ξαναπροσπαθήστε!";
+            ResultAlertDialog resultAlertDialog = new ResultAlertDialog(SignInActivity.this, getLayoutInflater());
+            resultAlertDialog.showResultAlertDialog(result, successMessage, failureMessage);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    resultAlertDialog.dismissAlertDialog();
+                    if (result) {
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+            }, 3000);
         }
     }
 }
