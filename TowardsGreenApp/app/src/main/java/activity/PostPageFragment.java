@@ -2,6 +2,7 @@ package activity;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,15 +24,15 @@ import com.aueb.towardsgreen.Connection;
 import com.aueb.towardsgreen.R;
 import com.aueb.towardsgreen.Request;
 import com.aueb.towardsgreen.Post;
+import com.aueb.towardsgreen.asynctask.FetchDataAsyncTask;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-public class PostFragmentPage extends Fragment {
+public class PostPageFragment extends Fragment {
 
     private boolean noMorePosts = false;
-    private Connection connection;
     private boolean refreshing = false;
     private int numberOfPostsFetched = 0;
     private LinearLayout postsLayout;
@@ -54,7 +55,6 @@ public class PostFragmentPage extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        connection = Connection.getInstance();
         postsLayout = view.findViewById(R.id.postsLayout);
         postScrollView =  view.findViewById(R.id.post_page_scrollView);
         postSwipeRefreshLayout = view.findViewById(R.id.post_page_refreshLayout);
@@ -72,8 +72,9 @@ public class PostFragmentPage extends Fragment {
             @Override
             public void onRefresh() {
                 refreshing = true;
-                PostFragmentPage.RefreshPostAsync asyncTask = new RefreshPostAsync();
-                asyncTask.execute();
+                RefreshPostAsyncTask refreshPostAsyncTask = new RefreshPostAsyncTask(String.valueOf(numberOfPostsFetched), "GETPOSTS",
+                        Post.class);
+                refreshPostAsyncTask.execute();
             }
         });
 
@@ -84,8 +85,9 @@ public class PostFragmentPage extends Fragment {
                 int scrollBottom = postView.getBottom() - (postScrollView.getHeight()+ postScrollView.getScrollY());
 
                 if(scrollBottom == 0 && !noMorePosts){
-                    PostAsync asyncTask = new PostAsync("Φόρτωση περισσοτέρων δημοσιεύσεων. Παρακαλώ περιμένετε...");
-                    asyncTask.execute();
+                    FetchPostAsyncTask fetchPostAsyncTask = new FetchPostAsyncTask(getActivity(), "Φόρτωση δημοσιεύσεων. Παρακαλώ περιμένετε..."
+                            , String.valueOf(numberOfPostsFetched), "GETMOREPOSTS", Post.class);
+                    fetchPostAsyncTask.execute();
                 }
             }
         });
@@ -98,8 +100,9 @@ public class PostFragmentPage extends Fragment {
             }
         });
 
-        PostAsync async = new PostAsync("Παρακαλώ περιμένετε...");
-        async.execute();
+        FetchPostAsyncTask fetchPostAsyncTask = new FetchPostAsyncTask(getActivity(), "Φόρτωση περισσοτέρων δημοσιεύσεων. Παρακαλώ περιμένετε..."
+                , String.valueOf(numberOfPostsFetched), "GETMOREPOSTS", Post.class);
+        fetchPostAsyncTask.execute();
     }
 
 
@@ -124,38 +127,10 @@ public class PostFragmentPage extends Fragment {
         transaction.commit();
     }
 
+    private class FetchPostAsyncTask extends FetchDataAsyncTask<Post> {
 
-    private ArrayList<Post> convertJsonToPosts(ArrayList<String> jsons) {
-        Gson gson = new Gson();
-        ArrayList<Post> posts = new ArrayList<>();
-        for (String json : jsons) {
-            posts.add(gson.fromJson(json, Post.class));
-        }
-        return posts;
-    }
-
-    private class PostAsync extends AsyncTask<String,String, ArrayList<Post>>{
-
-        ProgressDialog progressDialog = new ProgressDialog(getActivity());
-        String message;
-
-        public PostAsync(String message) {
-            this.message = message;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            progressDialog.setMessage(message);
-            progressDialog.setIndeterminate(false);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        @Override
-        protected ArrayList<Post> doInBackground(String... strings) {
-            return convertJsonToPosts(connection.requestGetData(new Request("GETMOREPOSTS", String.valueOf(numberOfPostsFetched))));
+        public FetchPostAsyncTask(Context context, String message, String json, String requestType, Class<Post> classType) {
+            super(context, message, json, requestType, classType);
         }
 
         @Override
@@ -166,15 +141,13 @@ public class PostFragmentPage extends Fragment {
                 noMorePosts = true;
             }
             showPosts(requestedPosts);
-            progressDialog.hide();
         }
     }
 
-    private class RefreshPostAsync extends AsyncTask<String, String, ArrayList<Post>>{
+    private class RefreshPostAsyncTask extends FetchDataAsyncTask<Post> {
 
-        @Override
-        protected ArrayList<Post> doInBackground(String... strings) {
-            return convertJsonToPosts(connection.requestGetData(new Request("GETPOSTS", String.valueOf(numberOfPostsFetched))));
+        public RefreshPostAsyncTask(String json, String requestType, Class<Post> classType) {
+            super(json, requestType, classType);
         }
 
         @Override
@@ -182,9 +155,7 @@ public class PostFragmentPage extends Fragment {
             super.onPostExecute(requestedPosts);
             showPosts(requestedPosts);
             refreshing = false;
-            Toast.makeText(getActivity(), String.valueOf(requestedPosts.size()), Toast.LENGTH_SHORT).show();
             postSwipeRefreshLayout.setRefreshing(false);
         }
     }
-
 }

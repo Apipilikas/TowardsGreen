@@ -49,14 +49,14 @@ public class MainActivity extends AppCompatActivity {
         username.setText(profile.getFullName());
         email.setText(profile.getEmail());
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.container_content, new PostFragmentPage()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container_content, new PostPageFragment()).commit();
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.posts_page:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container_content, new PostFragmentPage()).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container_content, new PostPageFragment()).commit();
 
                         break;
                     case R.id.events_page:

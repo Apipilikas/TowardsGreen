@@ -1,8 +1,7 @@
 package activity;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
+import android.content.Context;
 import android.os.Bundle;
 
 import com.aueb.towardsgreen.Connection;
@@ -23,16 +22,14 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.aueb.towardsgreen.R;
-import com.aueb.towardsgreen.Request;
 import com.aueb.towardsgreen.Profile;
+import com.aueb.towardsgreen.asynctask.FetchDataAsyncTask;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 public class EventPageFragment extends Fragment {
     private Profile profile;
-    private Connection connection;
 
     private boolean refreshing = false;
     private int numberOfEventsFetched = 0;
@@ -60,10 +57,7 @@ public class EventPageFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //events = new ArrayList<>();
-        connection = Connection.getInstance();
-        profile = connection.getProfile();
-
+        profile = Connection.getInstance().getProfile();
 
         eventsLayout = view.findViewById(R.id.eventsLayout);
         eventScrollView = view.findViewById(R.id.event_page_scrollView);
@@ -87,8 +81,9 @@ public class EventPageFragment extends Fragment {
             @Override
             public void onRefresh() {
                 refreshing = true;
-                RefreshEventAsyncTask myTask = new RefreshEventAsyncTask();
-                myTask.execute();
+                RefreshEventAsyncTask refreshEventAsyncTask = new RefreshEventAsyncTask(String.valueOf(numberOfEventsFetched),
+                        "GETEV", Event.class);
+                refreshEventAsyncTask.execute();
             }
         });
 
@@ -107,58 +102,39 @@ public class EventPageFragment extends Fragment {
                 int scrollBottom = sView.getBottom() - (eventScrollView.getHeight() + eventScrollView.getScrollY());
 
                 if (scrollBottom == 0 && !noMoreEvents) {
-                    EventAsyncTask myTask = new EventAsyncTask("Φόρτωση περισσοτέρων εκδηλώσεων. Παρακαλώ περιμένετε...");
-                    myTask.execute();
+                    FetchEventAsyncTask fetchEventAsyncTask = new FetchEventAsyncTask(getActivity(), "Φόρτωση περισσοτέρων εκδηλώσεων. Παρακαλώ περιμένετε...",
+                            String.valueOf(numberOfEventsFetched), "GETMOREEV", Event.class);
+                    fetchEventAsyncTask.execute();
                 }
             }
         });
-        EventAsyncTask myTask = new EventAsyncTask("Παρακαλώ περιμένετε...");
-        myTask.execute();
-
+        FetchEventAsyncTask fetchEventAsyncTask = new FetchEventAsyncTask(getActivity(), "Παρακαλώ περιμένετε...",
+                String.valueOf(numberOfEventsFetched), "GETMOREEV", Event.class);
+        fetchEventAsyncTask.execute();
     }
 
-    private class EventAsyncTask extends AsyncTask<String, String, ArrayList<Event>> {
-        ProgressDialog progressDialog = new ProgressDialog(getActivity());
-        String message;
+    private class FetchEventAsyncTask extends FetchDataAsyncTask<Event> {
 
-        public EventAsyncTask(String message) {
-            this.message = message;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            progressDialog.setMessage(message);
-            progressDialog.setIndeterminate(false);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        @Override
-        protected ArrayList<Event> doInBackground(String... strings) {
-            return convertJsonToEvents(connection.requestGetData(new Request("GETMOREEV", String.valueOf(numberOfEventsFetched))));
+        public FetchEventAsyncTask(Context context, String message, String json, String requestType, Class<Event> classType) {
+            super(context, message, json, requestType, classType);
         }
 
         @Override
         protected void onPostExecute(ArrayList<Event> requestedEvents) {
             super.onPostExecute(requestedEvents);
-            //events.addAll(requestedEvents);
             numberOfEventsFetched += requestedEvents.size();
             if (requestedEvents.size() < 2) {
                 noMoreEvents = true;
             }
             showEvents(requestedEvents);
-            progressDialog.hide();
-            progressDialog.dismiss();
         }
     }
 
-    private class RefreshEventAsyncTask extends AsyncTask<String, String, ArrayList<Event>> {
+    private class RefreshEventAsyncTask extends FetchDataAsyncTask<Event> {
 
-        @Override
-        protected ArrayList<Event> doInBackground(String... strings) {
-            return convertJsonToEvents(connection.requestGetData(new Request("GETEV", String.valueOf(numberOfEventsFetched))));
+
+        public RefreshEventAsyncTask(String json, String requestType, Class<Event> classType) {
+            super(json, requestType, classType);
         }
 
         @Override
@@ -188,14 +164,5 @@ public class EventPageFragment extends Fragment {
             }
         }
         transaction.commit();
-    }
-
-    private ArrayList<Event> convertJsonToEvents(ArrayList<String> jsons) {
-        Gson gson = new Gson();
-        ArrayList<Event> events = new ArrayList<>();
-        for (String json : jsons) {
-            events.add(gson.fromJson(json, Event.class));
-        }
-        return events;
     }
 }

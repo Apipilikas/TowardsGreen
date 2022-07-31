@@ -326,7 +326,7 @@ public class CreatePostFragment extends Fragment {
             @Override
             public void run() {
                 alertDialog.dismiss();
-                getParentFragmentManager().beginTransaction().replace(R.id.container_content, new PostFragmentPage()).commit();
+                getParentFragmentManager().beginTransaction().replace(R.id.container_content, new PostPageFragment()).commit();
             }
         }, 5000);
     }
