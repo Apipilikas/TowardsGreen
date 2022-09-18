@@ -1,3 +1,5 @@
+![towards-green main logo](towards_green_logo.png)
+
 # TowardsGreen
 Evangelos Pipilikas
 
