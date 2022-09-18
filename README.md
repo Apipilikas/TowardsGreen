@@ -20,8 +20,9 @@ Towards Green (TG) is a new app that is intented to help municipalities come clo
 3. Profile: it contains user's information.
 3. Post: it is uploaded by users and contains useful infromation for the issue that concerns them.
 4. Event: it is created only by supervisors and gives the opportunity to users to take part in it. Furthermore, it contains useful information for the place and time that is going to take place.
-5. QR scanning: it is operated only by supervisors and its use is mandatory for the user's confirmation of participation.
-6. Leaderboard: it shows the rank, the username and the points of each user.
+6. Badge: it is created by supervisor and can be achieved by one by attending an event. Badges come with points that are added at the user's account. It is actually a "treat" to keep up attending events.
+7. QR scanning: it is operated only by supervisors and its use is mandatory for the user's confirmation of participation.
+8. Leaderboard: it shows the rank, the username and the points of each user.
 
 For more details about the terms, an additional feature file is going to be uploaded soon.
 
